@@ -1,4 +1,5 @@
-﻿using FishingSessionsAPI.Interfaces;
+﻿using FishingSessionsAPI.Data;
+using FishingSessionsAPI.Interfaces;
 using FishingSessionsAPI.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -6,23 +7,28 @@ namespace FishingSessionsAPI.Services
 {
     public class FishingSessionService : IFishingSessionService
     {
-        private readonly List<FishingSession> _sessions = new();
+        private readonly FishingDbContext _context;
+
+        public FishingSessionService(FishingDbContext context)
+        {
+            _context = context;
+        }
         public FishingSession StartSession()
         {
             var session = new FishingSession
-            {
-                Id = _sessions.Count + 1,
+            {                
                 StartTime = DateTime.Now,
                 EndTime = null
             };
 
-            _sessions.Add(session);
+            _context.FishingSessions.Add(session);
+            _context.SaveChanges();
             return session;
         }
 
         public FishingSession EndSession(int id)
         {
-            var session = _sessions.FirstOrDefault(s => s.Id == id);
+            var session = GetSessionById(id);
 
             if (session == null)
             {
@@ -31,12 +37,14 @@ namespace FishingSessionsAPI.Services
 
             session.EndTime = DateTime.Now;
 
+            _context.SaveChanges();
+
             return session;
         }
 
         public FishingSession? GetSessionById(int id)
         {
-            return _sessions.FirstOrDefault(s => s.Id == id);    
+            return _context.FishingSessions.FirstOrDefault(s => s.Id == id);    
         }
     }
 }
