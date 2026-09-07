@@ -1,12 +1,15 @@
 using FishingSessionsAPI.Interfaces;
 using FishingSessionsAPI.Services;
+using FishingSessionsAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<IFishingSessionService, FishingSessionService>();
+builder.Services.AddScoped<IFishingSessionService, FishingSessionService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<FishingDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("FishingDatabase")));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
