@@ -2,6 +2,7 @@
 using FishingSessionsAPI.Interfaces;
 using FishingSessionsAPI.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using FishingSessionsAPI.Results;
 
 namespace FishingSessionsAPI.Services
 {
@@ -26,20 +27,39 @@ namespace FishingSessionsAPI.Services
             return session;
         }
 
-        public FishingSession EndSession(int id)
+        public EndSessionResult EndSession(int id)
         {
             var session = GetSessionById(id);
 
             if (session == null)
             {
-                return null;
+                return new EndSessionResult
+                {
+                    Success = false,
+                    ErrorMessage = "Fishing session not found",
+                    StatusCode = 404
+                };
+            }
+
+            if (session.EndTime != null)
+            {
+                return new EndSessionResult
+                {
+                    Success = false,
+                    ErrorMessage = "Fishing session has already been ended",
+                    StatusCode = 400
+                };
             }
 
             session.EndTime = DateTime.Now;
 
             _context.SaveChanges();
 
-            return session;
+            return new EndSessionResult
+            {
+                Success = true,
+                StatusCode = 200
+            };
         }
 
         public FishingSession? GetSessionById(int id)

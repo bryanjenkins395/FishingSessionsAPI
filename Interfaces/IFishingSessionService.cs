@@ -1,11 +1,12 @@
 ﻿using FishingSessionsAPI.Models;
+using FishingSessionsAPI.Results;
 
 namespace FishingSessionsAPI.Interfaces
 {
     public interface IFishingSessionService
     {
         FishingSession StartSession();
-        FishingSession? EndSession(int id);
+        EndSessionResult EndSession(int id);
 
         FishingSession? GetSessionById(int id);
     }

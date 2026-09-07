@@ -22,15 +22,20 @@ namespace FishingSessionsAPI.Controllers
             return Ok(session);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult EndSession(int id)
         {
-            var session = _fishingSessionService.EndSession(id);
-            if (session == null)
+            var result = _fishingSessionService.EndSession(id);
+
+            if (!result.Success)
             {
-                return NotFound();
+                return StatusCode(
+                    result.StatusCode ?? 500,
+                    result.ErrorMessage
+                );
             }
-            return Ok(session);
+
+            return Ok();
         }
 
         [HttpGet]
