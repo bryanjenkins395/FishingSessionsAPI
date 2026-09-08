@@ -3,6 +3,7 @@ using FishingSessionsAPI.Interfaces;
 using FishingSessionsAPI.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using FishingSessionsAPI.Results;
+using FishingSessionsAPI.Enums;
 
 namespace FishingSessionsAPI.Services
 {
@@ -17,7 +18,7 @@ namespace FishingSessionsAPI.Services
         public FishingSession StartSession()
         {
             var session = new FishingSession
-            {                
+            {
                 StartTime = DateTime.Now,
                 EndTime = null
             };
@@ -35,9 +36,8 @@ namespace FishingSessionsAPI.Services
             {
                 return new EndSessionResult
                 {
-                    Success = false,
-                    ErrorMessage = "Fishing session not found",
-                    StatusCode = 404
+                    OutCome = EndSessionOutcome.NotFound,
+                    ErrorMessage = "Fishing session not found"
                 };
             }
 
@@ -45,9 +45,8 @@ namespace FishingSessionsAPI.Services
             {
                 return new EndSessionResult
                 {
-                    Success = false,
-                    ErrorMessage = "Fishing session has already been ended",
-                    StatusCode = 400
+                    OutCome = EndSessionOutcome.AlreadyEnded,
+                    ErrorMessage = "Fishing session has already been ended"
                 };
             }
 
@@ -57,14 +56,13 @@ namespace FishingSessionsAPI.Services
 
             return new EndSessionResult
             {
-                Success = true,
-                StatusCode = 200
+                OutCome = EndSessionOutcome.Success
             };
         }
 
         public FishingSession? GetSessionById(int id)
         {
-            return _context.FishingSessions.FirstOrDefault(s => s.Id == id);    
+            return _context.FishingSessions.FirstOrDefault(s => s.Id == id);
         }
     }
 }
