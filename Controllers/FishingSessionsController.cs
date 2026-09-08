@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FishingSessionsAPI.Enums;
 using FishingSessionsAPI.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FishingSessionsAPI.Controllers
 {
@@ -27,15 +28,24 @@ namespace FishingSessionsAPI.Controllers
         {
             var result = _fishingSessionService.EndSession(id);
 
-            if (!result.Success)
+            if (result.OutCome == EndSessionOutcome.NotFound)
             {
-                return StatusCode(
-                    result.StatusCode ?? 500,
-                    result.ErrorMessage
-                );
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok();
+            if (result.OutCome == EndSessionOutcome.AlreadyEnded)
+            {
+                return Conflict(result.ErrorMessage);
+            }
+
+            if (result.OutCome == EndSessionOutcome.Success)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500);
+
+
         }
 
         [HttpGet]
